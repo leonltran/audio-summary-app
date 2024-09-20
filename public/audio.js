@@ -18,6 +18,7 @@ if (navigator.mediaDevices.getUserMedia)
 
         // start recording
         record.onclick = function () {
+            console.log("recorder started");
             navigator.mediaDevices.getUserMedia;
             mediaRecorder.start();
             stop.disabled = false;
@@ -32,11 +33,28 @@ if (navigator.mediaDevices.getUserMedia)
         };
 
         mediaRecorder.onstop = function (e) {
-            console.log("Last data to read (after MediaRecorder.stop() called).");
-
             // create Blob using data
+            
             const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
             chunks = [];
+
+            // Prepare the fetch request
+            const formData = new FormData();
+            formData.append("audio", blob);
+
+            fetch("http://127.0.0.1:5000/upload", {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server response:", data);
+                // Handle server response (e.g., success message)
+            })
+            .catch(error => {
+                console.error("Error sending audio:", error);
+            });
+
             const audioURL = window.URL.createObjectURL(blob);
             recordedAudio.src = audioURL;
             recordedAudio.load();
