@@ -6,7 +6,8 @@ const recordedAudio = document.getElementById('recordedAudio');
 stop.disabled = true;
 
 // Main block for doing the audio recording
-if (navigator.mediaDevices.getUserMedia) {
+if (navigator.mediaDevices.getUserMedia) 
+    {
     console.log("The mediaDevices.getUserMedia() method is supported.");
 
     const constraints = { audio: true };
@@ -17,6 +18,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
         // start recording
         record.onclick = function () {
+            navigator.mediaDevices.getUserMedia;
             mediaRecorder.start();
             stop.disabled = false;
             record.disabled = true;
@@ -32,6 +34,7 @@ if (navigator.mediaDevices.getUserMedia) {
         mediaRecorder.onstop = function (e) {
             console.log("Last data to read (after MediaRecorder.stop() called).");
 
+            // create Blob using data
             const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
             chunks = [];
             const audioURL = window.URL.createObjectURL(blob);
@@ -50,7 +53,13 @@ if (navigator.mediaDevices.getUserMedia) {
         console.log("The following error occured: " + err);
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-} else {
+    record.onclick = function () {
+        // record.onclick gets overwritten once onSuccess fires
+        navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+    };
+    
+} 
+else 
+{
     console.log("MediaDevices.getUserMedia() not supported on your browser!");
 }

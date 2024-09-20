@@ -18,3 +18,15 @@ body {
     gap: 10px;
     /* Adjust the gap as needed */
 }
+
+/* Add these styles to your styles.css file */
+
+body.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode button {
+    background-color: #444;
+    color: #fff;
+}
