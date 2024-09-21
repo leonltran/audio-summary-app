@@ -7,15 +7,16 @@ stop.disabled = true;
 
 // Main block for doing the audio recording
 if (navigator.mediaDevices.getUserMedia) 
-    {
+{
     console.log("The mediaDevices.getUserMedia() method is supported.");
-
     const constraints = { audio: true };
     let chunks = [];
 
     let onSuccess = function (stream) {
-        const mediaRecorder = new MediaRecorder(stream);
-
+        const options = {
+            audioBitsPerSecond: 16000 // 16kbps is the amt Gemini downsamples to
+        }
+        const mediaRecorder = new MediaRecorder(stream, options)
         // start recording
         record.onclick = function () {
             console.log("recorder started");
@@ -40,7 +41,7 @@ if (navigator.mediaDevices.getUserMedia)
 
             // Prepare the fetch request
             const formData = new FormData();
-            formData.append("audio", blob);
+            formData.append("audio", blob, "recording");
 
             fetch("http://127.0.0.1:5000/upload", {
                 method: 'POST',
