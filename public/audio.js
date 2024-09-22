@@ -1,9 +1,12 @@
 const record = document.getElementById('startButton');
+const summarize = document.getElementById('summaryButton');
 const stop = document.getElementById('stopButton');
 const recordedAudio = document.getElementById('recordedAudio');
 
 // Disable stop button while not recording
 stop.disabled = true;
+summarize.disabled = true;
+var apiUrl = "http://127.0.0.1:5000/upload"
 
 // Main block for doing the audio recording
 if (navigator.mediaDevices.getUserMedia) 
@@ -23,14 +26,30 @@ if (navigator.mediaDevices.getUserMedia)
             navigator.mediaDevices.getUserMedia;
             mediaRecorder.start();
             stop.disabled = false;
+            summarize.disabled = false;
             record.disabled = true;
         };
 
         // stop recording
         stop.onclick = function () {
-            mediaRecorder.stop();
+            apiUrl = "http://127.0.0.1:5000/upload"
+            
             stop.disabled = true;
+            summarize.disabled = true;
             record.disabled = false;
+
+            mediaRecorder.stop();
+        };
+
+        // stop recording 2
+        summarize.onclick = function () {
+            apiUrl = "http://127.0.0.1:5000/summarize"
+            
+            stop.disabled = true;
+            summarize.disabled = true;
+            record.disabled = false;
+
+            mediaRecorder.stop();
         };
 
         mediaRecorder.onstop = function (e) {
@@ -43,7 +62,7 @@ if (navigator.mediaDevices.getUserMedia)
             const formData = new FormData();
             formData.append("audio", blob, "recording");
 
-            fetch("http://127.0.0.1:5000/upload", {
+            fetch(apiUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -72,11 +91,8 @@ if (navigator.mediaDevices.getUserMedia)
         console.log("The following error occured: " + err);
     };
 
-    record.onclick = function () {
-        // record.onclick gets overwritten once onSuccess fires
-        navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-    };
     
+    navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
 } 
 else 
 {

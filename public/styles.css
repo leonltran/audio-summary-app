@@ -30,3 +30,9 @@ body.dark-mode button {
     background-color: #444;
     color: #fff;
 }
+
+body.dark-mode textarea {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #222;
+}
