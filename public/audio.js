@@ -1,7 +1,12 @@
+const recordedAudio = document.getElementById('recordedAudio'); 
+
 const record = document.getElementById('startButton');
-const summarize = document.getElementById('summaryButton');
 const stop = document.getElementById('stopButton');
-const recordedAudio = document.getElementById('recordedAudio');
+
+const upload = document.getElementById('fileUpload');
+const send = document.getElementById('sendButton');
+const summarize = document.getElementById('summaryButton');
+
 
 // Disable stop button while not recording
 stop.disabled = true;
@@ -52,15 +57,27 @@ if (navigator.mediaDevices.getUserMedia)
             mediaRecorder.stop();
         };
 
+        var audioBlob; // variable to store recording or file upload
         mediaRecorder.onstop = function (e) {
-            // create Blob using data
-            
-            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+            audioBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
             chunks = [];
 
+            const audioURL = window.URL.createObjectURL(audioBlob);
+            recordedAudio.src = audioURL;
+            recordedAudio.load();
+            recordedAudio.play();
+            console.log("recorder stopped");
+        };
+ 
+        upload.onchange = function (e) {
+            audioBlob = e.target.files[0];
+            recordedAudio.src = window.URL.createObjectURL(audioBlob);;
+        }
+
+        send.onclick = function () {
             // Prepare the fetch request
             const formData = new FormData();
-            formData.append("audio", blob, "recording");
+            formData.append("audio", audioBlob, "recording");
 
             fetch(apiUrl, {
                 method: 'POST',
@@ -69,18 +86,12 @@ if (navigator.mediaDevices.getUserMedia)
             .then(response => response.json())
             .then(data => {
                 console.log("Server response:", data);
-                // Handle server response (e.g., success message)
+                resultsTextarea.innerHTML=data.message;
             })
             .catch(error => {
                 console.error("Error sending audio:", error);
             });
-
-            const audioURL = window.URL.createObjectURL(blob);
-            recordedAudio.src = audioURL;
-            recordedAudio.load();
-            recordedAudio.play();
-            console.log("recorder stopped");
-        };
+        }
 
         mediaRecorder.ondataavailable = function (e) {
             chunks.push(e.data);

@@ -12,15 +12,17 @@
         <audio id="recordedAudio" controls></audio>
         <div class="button-row">
             <button id="startButton">Start Recording</button>
-            <button id="stopButton">Stop Recording</button>
+            <button id="stopButton">Stop Recording </button>
+            <input type="file" id="fileUpload" name="filename" accept="audio/webm, audio/wav, audio/mpeg, audio/aac, audio/ogg" />
         </div>
         <div class="button-row">
-            <button id="uploadButton">Upload Recording (unimplemented)</button>
+            
             <button id="sendButton">Send Recording (unimplemented)</button>
             <button id="summaryButton">Summarize Audio</button>
+            <input>
         </div>
         <button id="getButton">Get Data</button>
-        <textarea id="dbContent" rows="12" cols="64"></textarea>
+        <textarea id="dbContent" rows="12" cols="64" readonly=true></textarea>
         Potential TODOs:
         <ul>
             <li>Implement separate Send Recording logic so that user can review their recording before sending to server</li>

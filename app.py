@@ -97,7 +97,38 @@ def _save_to_db(json_data):
         if conn:
             conn.close()
 
+def _save_summary_to_db(name, summary):
+    db_name = "people_info.db"
 
+    try:
+        # Connect to the SQLite database
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+
+        # Create the `summaries` table (if it doesn't exist)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS summaries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        summary TEXT
+        )""")
+        
+        # Insert data into the `summaries` table
+        sql = "INSERT INTO summaries (first_name, last_name, age, profession, date_recorded) VALUES (?, ?)"
+        val = (name, summary)
+        cursor.execute(sql, val)
+
+        # Commit the changes
+        conn.commit()
+
+    except (sqlite3.Error, json.JSONDecodeError) as e:
+        # Handle database errors or invalid JSON data
+        print(f"Error occurred: {e}")
+        # Consider logging the error or taking other actions
+    finally:
+        # Close the connection, even if an error occurred
+        if conn:
+            conn.close()
 
 @app.route('/upload', methods=['POST'])
 def upload_audio():
@@ -131,8 +162,6 @@ def upload_audio():
 
     return jsonify({'message': response})
 
-
-
 @app.route('/summarize', methods=['POST'])
 def summarize_audio():
     # Check if audio file is present in the request
@@ -159,8 +188,6 @@ def summarize_audio():
     response = _summarize(mp3_filename, prompt)
 
     return jsonify({'message': response})
-
-
 
 @app.route('/contacts', methods=['GET'])
 def fetch_all():
@@ -200,7 +227,7 @@ def fetch_all():
                     })
             results.append(user_data)
 
-        return results
+        return jsonify(results)
 
     except sqlite3.Error as e:
         print(f"Error occurred: {e}")
